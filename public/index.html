@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eCommerce Checkout Auditor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100">
+  <div class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-slate-900">
+              <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
+              eCommerce Checkout Auditor
+            </h1>
+            <p class="text-slate-600 mt-1">Automated seller prep workflow for ecommerce checkout audits</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Tabs Navigation -->
+      <div class="flex gap-2 mb-6 border-b border-slate-200">
+        <button class="tab-btn active" data-tab="single" onclick="switchTab('single')">
+          <i class="fas fa-globe mr-2"></i>Single Domain
+        </button>
+        <button class="tab-btn" data-tab="batch" onclick="switchTab('batch')">
+          <i class="fas fa-list mr-2"></i>Batch Upload
+        </button>
+      </div>
+
+      <!-- Single Domain Tab -->
+      <div id="single-tab" class="tab-content">
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4">Audit a Domain</h2>
+          
+          <div class="flex gap-3">
+            <input 
+              type="text" 
+              id="domain-input"
+              placeholder="e.g., example.com"
+              class="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onkeypress="if(event.key === 'Enter') startAudit()"
+            >
+            <button 
+              id="audit-btn"
+              onclick="startAudit()"
+              class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+            >
+              <i class="fas fa-play"></i>
+              Run Audit
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progress-section" class="hidden mb-8">
+          <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-slate-900">Audit Progress</h3>
+              <span id="progress-text" class="text-sm text-slate-600">0%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+              <div 
+                id="progress-bar"
+                class="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300"
+                style="width: 0%"
+              ></div>
+            </div>
+            <p id="progress-message" class="text-sm text-slate-600 mt-3">Starting audit...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Tab -->
+      <div id="batch-tab" class="tab-content hidden">
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4">Batch Audit</h2>
+          <p class="text-slate-600 mb-4">Upload a list of domains (one per line)</p>
+          
+          <textarea 
+            id="batch-input"
+            placeholder="example1.com&#10;example2.com&#10;example3.com"
+            class="w-full h-40 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+          ></textarea>
+          
+          <button 
+            onclick="startBatchAudit()"
+            class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+          >
+            <i class="fas fa-play"></i>
+            Run Batch Audit
+          </button>
+        </div>
+      </div>
+
+      <!-- Timeline Results -->
+      <div id="timeline-section" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-900">
+            <i class="fas fa-timeline text-blue-600 mr-3"></i>
+            Audit Timeline
+          </h2>
+          <button 
+            id="export-btn"
+            onclick="exportCSV()"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm flex items-center gap-2"
+          >
+            <i class="fas fa-download"></i>
+            Export CSV
+          </button>
+        </div>
+
+        <!-- Stage Timeline -->
+        <div id="timeline" class="space-y-4">
+          <!-- Stages will be inserted here -->
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="text-center py-12">
+        <i class="fas fa-inbox text-6xl text-slate-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-slate-600">No audit in progress</h3>
+        <p class="text-slate-500 mt-2">Enter a domain above to start an audit</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div id="image-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+      <div class="sticky top-0 bg-white border-b border-slate-200 p-4 flex justify-between items-center">
+        <h3 id="modal-title" class="text-lg font-semibold text-slate-900">Screenshot</h3>
+        <button onclick="closeModal()" class="text-slate-500 hover:text-slate-700 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <img id="modal-image" src="" alt="Screenshot" class="w-full">
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-6 right-6 z-40"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

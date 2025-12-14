@@ -134,8 +134,12 @@ dmypy.json
 Thumbs.db
 
 # Project specific
-data/
+artifacts/
 output/
 *.csv
+.env
+!.env.example
 config.yml
+dist/
+uploads/
 
