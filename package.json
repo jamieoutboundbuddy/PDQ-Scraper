@@ -5,10 +5,11 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node src/server.ts",
-    "build": "tsc",
+    "build": "tsc && npx playwright install --with-deps chromium",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf dist artifacts"
+    "clean": "rm -rf dist artifacts",
+    "postinstall": "npx playwright install --with-deps chromium"
   },
   "keywords": [
     "checkout",
@@ -30,6 +31,7 @@
     "url": "https://github.com/jamieoutboundbuddy/PDQ-Scraper/issues"
   },
   "dependencies": {
+    "cheerio": "^1.1.2",
     "cors": "^2.8.5",
     "csv-parse": "^5.5.2",
     "csv-stringify": "^6.4.4",
@@ -38,6 +40,8 @@
     "multer": "^1.4.5-lts.1",
     "openai": "^4.20.0",
     "playwright": "^1.40.0",
+    "playwright-extra": "^4.3.6",
+    "playwright-extra-plugin-stealth": "^0.0.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

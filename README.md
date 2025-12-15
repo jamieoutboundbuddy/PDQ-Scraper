@@ -115,7 +115,9 @@ npm run dev
 │   Express Server (src/server.ts)    │
 │   - POST /api/audit                 │
 │   - GET /api/audit/:jobId           │
+│   - POST /api/audit-sync            │ (NEW: for Clay/n8n)
 │   - POST /api/audit-batch           │
+│   - POST /api/audit-batch-sync      │ (NEW: batch sync)
 │   - POST /api/download-csv          │
 └──────────────┬──────────────────────┘
                │ async
@@ -517,6 +519,51 @@ npm install -g pm2
 pm2 start dist/server.js --name "checkout-auditor"
 pm2 save
 ```
+
+### Railway Deployment (Recommended for Clay/n8n)
+
+Railway is ideal for hosting this API for external integrations like Clay or n8n.
+
+**1. Install Railway CLI:**
+```bash
+npm install -g @railway/cli
+```
+
+**2. Login and link project:**
+```bash
+railway login
+railway link
+```
+
+**3. Set environment variables in Railway dashboard:**
+- `OPENAI_API_KEY` (required)
+- `PORT` (auto-set by Railway)
+- Optional checkout defaults (see `.env.example`)
+
+**4. Deploy:**
+```bash
+railway up
+```
+
+**5. Get your API URL:**
+Railway will provide a URL like: `https://your-app-name.railway.app`
+
+**6. Test the sync API:**
+```bash
+curl -X POST https://your-app-name.railway.app/api/audit-sync \
+  -H "Content-Type: application/json" \
+  -d '{"domain": "gymshark.com"}' \
+  --max-time 180
+```
+
+**For Clay/n8n Integration:**
+- Use the `/api/audit-sync` endpoint
+- Method: POST
+- Body: `{"domain": "{{your_domain_field}}"}`
+- Timeout: 180 seconds
+- Response: Full `AuditResult` JSON with absolute screenshot URLs
+
+See `RAILWAY.md` for detailed configuration and API documentation.
 
 ### Docker (Optional)
 

@@ -3,9 +3,12 @@
  */
 
 export type CheckoutStage = 
+  | 'summary'
   | 'homepage'
   | 'product'
   | 'cart'
+  | 'view_cart'
+  | 'checkout'
   | 'checkout_contact'
   | 'checkout_shipping'
   | 'checkout_payment';
@@ -62,5 +65,9 @@ export interface CheckoutConfig {
   zip: string;
   country: string;
   phone: string;
+  cardNumber?: string;
+  cardName?: string;
+  cardExpiry?: string;
+  cardCvv?: string;
 }
 

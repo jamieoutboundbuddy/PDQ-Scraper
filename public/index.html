@@ -3,24 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eCommerce Checkout Auditor</title>
+  <title>Checkout Auditor - Outbound Buddy</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100">
   <div class="min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Header with Outbound Buddy Branding -->
+    <header class="outbound-header">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold text-slate-900">
-              <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
-              eCommerce Checkout Auditor
-            </h1>
-            <p class="text-slate-600 mt-1">Automated seller prep workflow for ecommerce checkout audits</p>
+          <div class="flex items-center gap-4 flex-1">
+            <img src="/logo-icon.png" alt="Outbound Buddy" class="outbound-logo-icon">
+            <div>
+              <h1 class="outbound-title">Checkout Auditor</h1>
+              <p class="outbound-subtitle">Discover checkout features on any ecommerce site with enterprise-grade detection</p>
+            </div>
           </div>
+          <a href="https://outboundbuddy.com" target="_blank" rel="noopener" class="outbound-badge">
+            <i class="fas fa-cloud"></i>
+            <span>Outbound Buddy</span>
+          </a>
         </div>
       </div>
     </header>
@@ -47,13 +52,13 @@
               type="text" 
               id="domain-input"
               placeholder="e.g., example.com"
-              class="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               onkeypress="if(event.key === 'Enter') startAudit()"
             >
             <button 
               id="audit-btn"
               onclick="startAudit()"
-              class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+              class="ob-button-primary"
             >
               <i class="fas fa-play"></i>
               Run Audit
@@ -71,7 +76,7 @@
             <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
               <div 
                 id="progress-bar"
-                class="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300"
+                class="ob-progress-bar h-full transition-all duration-300"
                 style="width: 0%"
               ></div>
             </div>
@@ -94,7 +99,7 @@
           
           <button 
             onclick="startBatchAudit()"
-            class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+            class="mt-4 ob-button-primary"
           >
             <i class="fas fa-play"></i>
             Run Batch Audit
@@ -107,7 +112,7 @@
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold text-slate-900">
             <i class="fas fa-timeline text-blue-600 mr-3"></i>
-            Audit Timeline
+            Audit Results
           </h2>
           <button 
             id="export-btn"
@@ -119,9 +124,14 @@
           </button>
         </div>
 
-        <!-- Stage Timeline -->
-        <div id="timeline" class="space-y-4">
-          <!-- Stages will be inserted here -->
+        <!-- Stage Tabs Navigation -->
+        <div id="stage-tabs" class="flex gap-2 mb-6 border-b border-slate-200 overflow-x-auto pb-0">
+          <!-- Tab buttons will be inserted here -->
+        </div>
+
+        <!-- Stage Content Panel -->
+        <div id="stage-content" class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+          <!-- Stage details will be inserted here -->
         </div>
       </div>
 

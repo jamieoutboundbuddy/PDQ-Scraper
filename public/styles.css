@@ -1,6 +1,14 @@
-/* Custom CSS for eCommerce Checkout Auditor */
+/* Custom CSS for eCommerce Checkout Auditor - Outbound Buddy Branding */
 
 :root {
+  /* Outbound Buddy Brand Colors */
+  --ob-primary: #2563eb;
+  --ob-accent: #3b82f6;
+  --ob-gradient-start: #4f46e5; /* Indigo */
+  --ob-gradient-end: #60a5fa; /* Sky blue */
+  --ob-dark: #1e293b;
+  
+  /* Standard colors */
   --primary-blue: #2563eb;
   --accent-blue: #3b82f6;
   --success-green: #10b981;
@@ -14,30 +22,140 @@
   --slate-900: #0f172a;
 }
 
+/* Outbound Buddy Header */
+.outbound-header {
+  background: linear-gradient(135deg, var(--ob-gradient-start) 0%, var(--ob-gradient-end) 100%);
+  border-radius: 0 0 1rem 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+}
+
+.outbound-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.outbound-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.outbound-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.75rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.outbound-badge:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.outbound-badge i {
+  font-size: 1.2rem;
+}
+
+.outbound-logo-icon {
+  height: 60px;
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Outbound Buddy Brand Buttons */
+.ob-button-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--ob-gradient-start), var(--ob-gradient-end));
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+  font-size: 1rem;
+}
+
+.ob-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #4338ca, #3b82f6);
+}
+
+.ob-button-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+.ob-button-primary i {
+  font-size: 0.9rem;
+}
+
+/* Outbound Buddy Progress Bar */
+.ob-progress-bar {
+  background: linear-gradient(90deg, var(--ob-gradient-start), var(--ob-gradient-end));
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
 * {
   box-sizing: border-box;
 }
 
-/* Tab Navigation */
+/* Tab Navigation - Outbound Buddy Style */
 .tab-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   border: none;
-  background: transparent;
+  background: white;
   color: var(--slate-600);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   border-bottom: 3px solid transparent;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  margin-right: 0.25rem;
 }
 
 .tab-btn:hover {
-  color: var(--slate-900);
+  color: var(--ob-primary);
+  background: var(--slate-50);
 }
 
 .tab-btn.active {
-  color: var(--primary-blue);
-  border-bottom-color: var(--primary-blue);
+  color: var(--ob-primary);
+  background: white;
+  border-bottom-color: var(--ob-primary);
+}
+
+/* Tabs container background */
+.flex.gap-2.mb-6.border-b {
+  background: white;
+  padding: 0.5rem 0.5rem 0 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: 2px solid var(--slate-200);
 }
 
 /* Tab Content */
@@ -60,29 +178,42 @@
   }
 }
 
-/* Stage Cards */
-.stage-card {
+/* Stage Tabs - Outbound Buddy Style */
+.stage-tab {
+  padding: 0.75rem 1.5rem;
+  border: none;
   background: white;
-  border: 1px solid var(--slate-200);
-  border-left: 4px solid var(--primary-blue);
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  animation: slideIn 0.4s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
+  color: var(--slate-600);
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  border-radius: 0.5rem 0.5rem 0 0;
+  margin-right: 0.25rem;
 }
 
-.stage-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.stage-tab:hover {
+  color: var(--ob-primary);
+  background: var(--slate-50);
 }
 
-.stage-card.has-edd {
-  border-left-color: var(--success-green);
+.stage-tab.active {
+  color: var(--ob-primary);
+  background: white;
+  border-bottom-color: var(--ob-primary);
 }
 
-.stage-card.no-edd {
-  border-left-color: var(--error-red);
+/* Stage Content Panel */
+.stage-content {
+  animation: fadeIn 0.3s ease;
+}
+
+.stage-content .stage-header {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--slate-100);
+  padding-bottom: 1rem;
 }
 
 @keyframes slideIn {
@@ -183,8 +314,7 @@
 }
 
 .screenshot:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* No hover effects - just cursor pointer */
 }
 
 /* Evidence & Notes */
@@ -364,6 +494,306 @@ button:disabled {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* ====== NEW STAGE HEADER STYLES ====== */
+
+.stage-header-new {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem 0;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--slate-100);
+  gap: 2rem;
+}
+
+.stage-title-section {
+  flex: 1;
+}
+
+.stage-title-large {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--slate-900);
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.5px;
+}
+
+/* Stage Link Badge - Outbound Buddy Style */
+.stage-link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(96, 165, 250, 0.1));
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  border-radius: 0.5rem;
+  color: var(--ob-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.stage-link-badge:hover {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(96, 165, 250, 0.15));
+  border-color: var(--ob-primary);
+  color: var(--ob-gradient-start);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+}
+
+.link-icon {
+  font-size: 1.1rem;
+}
+
+.link-text {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+.link-arrow {
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
+
+.stage-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.badge-meta {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  background: var(--slate-100);
+  color: var(--slate-600);
+  border-radius: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Features Summary - Outbound Buddy Style */
+.features-summary {
+  margin: 1.5rem 0 2rem 0;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(96, 165, 250, 0.08));
+  border-left: 4px solid var(--ob-primary);
+  border-radius: 0.5rem;
+}
+
+.features-label {
+  font-weight: 600;
+  color: var(--slate-900);
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.detections {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.pill.edd {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+.pill.upsells {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1e40af;
+}
+
+.pill.fst {
+  background: rgba(168, 85, 247, 0.15);
+  color: #6b21a8;
+}
+
+.pill.addon {
+  background: rgba(249, 115, 22, 0.15);
+  color: #92400e;
+}
+
+.pill.trust {
+  background: rgba(236, 72, 153, 0.15);
+  color: #831843;
+}
+
+.pill.absent {
+  background: var(--slate-100);
+  color: var(--slate-600);
+}
+
+/* Screenshot Container */
+.screenshot-container {
+  margin: 2rem 0;
+  border: 1px solid var(--slate-200);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--slate-50);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.screenshot-container:hover {
+  cursor: pointer;
+}
+
+.screenshot {
+  width: 100%;
+  max-height: none;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Stage Notes */
+.stage-notes {
+  margin: 2rem 0;
+  padding: 1rem;
+  background: var(--slate-50);
+  border-left: 4px solid var(--success-green);
+  border-radius: 0.5rem;
+}
+
+.note-item {
+  color: var(--slate-700);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+/* Evidence Section */
+.evidence-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--slate-50);
+  border-radius: 0.75rem;
+  border: 1px solid var(--slate-200);
+}
+
+.evidence-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--slate-900);
+  margin: 0 0 1rem 0;
+}
+
+/* ====== BATCH AUDIT STYLES ====== */
+
+#batch-results-section.hidden {
+  display: none;
+}
+
+.batch-job-card {
+  transition: all 0.2s ease;
+}
+
+.batch-job-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.batch-job-header {
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.batch-job-content {
+  max-height: 600px;
+  overflow-y: auto;
+  background: var(--slate-50);
+}
+
+.batch-job-content.hidden {
+  display: none;
+}
+
+.batch-stages-list {
+  background: white;
+}
+
+.batch-stage-item {
+  transition: background 0.2s ease;
+}
+
+.batch-stage-item:hover {
+  background: var(--slate-50);
+}
+
+/* Batch progress indicators */
+.batch-status-badge {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Status colors for batch cards */
+.batch-job-card[data-status="queued"] .batch-job-header {
+  border-left: 4px solid var(--slate-400);
+}
+
+.batch-job-card[data-status="running"] .batch-job-header {
+  border-left: 4px solid var(--primary-blue);
+}
+
+.batch-job-card[data-status="completed"] .batch-job-header {
+  border-left: 4px solid var(--success-green);
+}
+
+.batch-job-card[data-status="failed"] .batch-job-header {
+  border-left: 4px solid var(--error-red);
+}
+
+/* Batch thumbnails */
+.batch-stage-item img {
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Responsive batch cards */
+@media (max-width: 768px) {
+  .batch-job-header .flex {
+    flex-wrap: wrap;
+  }
+  
+  .batch-job-header .w-32 {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .batch-stage-item .flex {
+    flex-direction: column;
+  }
+  
+  .batch-stage-item img {
+    width: 100%;
+    height: auto;
   }
 }
 

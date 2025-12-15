@@ -16,13 +16,13 @@ import {
   failJob,
   cleanupOldJobs,
 } from './jobs';
-import { runCheckoutJourney, closeBrowser } from './checkout';
+import { runCheckoutJourney, closeBrowser, getCheckoutConfigForDomain, getConcurrencyStatus } from './checkout';
 import { AuditResult, CheckoutConfig } from './types';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // Middleware
 app.use(cors());
@@ -32,15 +32,20 @@ app.use('/artifacts', express.static('artifacts'));
 
 // Checkout configuration from environment
 const checkoutConfig: CheckoutConfig = {
-  email: process.env.CHECKOUT_EMAIL || 'test@example.com',
-  firstName: process.env.CHECKOUT_FIRST_NAME || 'Test',
-  lastName: process.env.CHECKOUT_LAST_NAME || 'User',
-  address: process.env.CHECKOUT_ADDRESS || '123 Main St',
-  city: process.env.CHECKOUT_CITY || 'San Francisco',
-  state: process.env.CHECKOUT_STATE || 'CA',
-  zip: process.env.CHECKOUT_ZIP || '94102',
-  country: process.env.CHECKOUT_COUNTRY || 'US',
-  phone: process.env.CHECKOUT_PHONE || '5551234567',
+  email: process.env.CHECKOUT_EMAIL || 'james.mumford@example.com',
+  firstName: process.env.CHECKOUT_FIRST_NAME || 'James',
+  lastName: process.env.CHECKOUT_LAST_NAME || 'Mumford',
+  address: process.env.CHECKOUT_ADDRESS || '43 Bussel, 6 Westfield Avenue',
+  city: process.env.CHECKOUT_CITY || 'London',
+  state: process.env.CHECKOUT_STATE || 'London',
+  zip: process.env.CHECKOUT_ZIP || 'E20 1NB',
+  country: process.env.CHECKOUT_COUNTRY || 'GB',
+  phone: process.env.CHECKOUT_PHONE || '+44 20 7681 0341',
+  // Realistic test payment card (Visa test card)
+  cardNumber: process.env.CHECKOUT_CARD || '4111111111111111',
+  cardName: process.env.CHECKOUT_CARD_NAME || 'James Mumford',
+  cardExpiry: process.env.CHECKOUT_CARD_EXPIRY || '12/27',
+  cardCvv: process.env.CHECKOUT_CARD_CVV || '123',
 };
 
 /**
@@ -51,6 +56,23 @@ app.get('/api/health', (req: Request, res: Response) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
+  });
+});
+
+/**
+ * GET /api/status - Get server status including concurrency info
+ */
+app.get('/api/status', (req: Request, res: Response) => {
+  const concurrency = getConcurrencyStatus();
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+    concurrency: {
+      activeBrowsers: concurrency.active,
+      maxBrowsers: concurrency.max,
+      queuedJobs: concurrency.queued,
+    },
   });
 });
 
@@ -109,6 +131,76 @@ app.get('/api/audit/:jobId', (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/audit-sync - Run audit synchronously and return results
+ * Designed for Clay/n8n integration
+ * Body: { domain: string }
+ * Returns: AuditResult (waits for completion)
+ * Timeout: 180 seconds
+ */
+app.post('/api/audit-sync', async (req: Request, res: Response) => {
+  try {
+    const { domain } = req.body;
+    
+    if (!domain) {
+      return res.status(400).json({ error: 'domain is required' });
+    }
+    
+    // Set long timeout (audits can take 60+ seconds)
+    req.setTimeout(180000); // 3 minutes
+    
+    const jobId = createJob(domain);
+    const job = getJob(jobId);
+    
+    if (!job) {
+      return res.status(500).json({ error: 'Failed to create job' });
+    }
+    
+    const startedAt = new Date().toISOString();
+    
+    // Get location-specific checkout config
+    const domainConfig = getCheckoutConfigForDomain(domain, checkoutConfig);
+    
+    // Run audit synchronously
+    const stages = await runCheckoutJourney(domain, jobId, domainConfig);
+    
+    // Build result
+    const result: AuditResult = {
+      domain,
+      jobId,
+      startedAt: job.result.startedAt || startedAt,
+      completedAt: new Date().toISOString(),
+      status: 'completed',
+      stages,
+    };
+    
+    completeJob(jobId, result);
+    
+    // Make screenshot URLs absolute for external access
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const resultWithAbsoluteUrls = {
+      ...result,
+      stages: result.stages.map(stage => ({
+        ...stage,
+        screenshotUrl: stage.screenshotUrl.startsWith('http') 
+          ? stage.screenshotUrl 
+          : `${baseUrl}${stage.screenshotUrl}`
+      }))
+    };
+    
+    res.json(resultWithAbsoluteUrls);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error in sync audit:', error);
+    res.status(500).json({ 
+      domain: req.body.domain || 'unknown',
+      status: 'failed',
+      error: errorMessage,
+      stages: []
+    });
+  }
+});
+
+/**
  * POST /api/audit-batch - Start batch audit
  * Body: { domains: string[] }
  * Returns: { jobIds: string[] }
@@ -136,6 +228,90 @@ app.post('/api/audit-batch', (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error creating batch audit:', error);
     res.status(500).json({ error: 'Failed to create batch audit' });
+  }
+});
+
+/**
+ * POST /api/audit-batch-sync - Run batch audit synchronously
+ * Body: { domains: string[] }
+ * Returns: { results: AuditResult[] }
+ * Timeout: 300 seconds (5 minutes)
+ */
+app.post('/api/audit-batch-sync', async (req: Request, res: Response) => {
+  try {
+    const { domains } = req.body;
+    
+    if (!Array.isArray(domains) || domains.length === 0) {
+      return res.status(400).json({ error: 'domains array is required and non-empty' });
+    }
+    
+    // Limit batch size to prevent resource exhaustion
+    if (domains.length > 10) {
+      return res.status(400).json({ error: 'Maximum 10 domains per batch' });
+    }
+    
+    req.setTimeout(300000); // 5 minutes
+    
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const results: AuditResult[] = [];
+    
+    // Process domains sequentially to avoid overwhelming the server
+    for (const domain of domains) {
+      try {
+        const jobId = createJob(domain);
+        const job = getJob(jobId);
+        const startedAt = new Date().toISOString();
+        
+        if (!job) {
+          results.push({
+            domain,
+            jobId: '',
+            startedAt,
+            completedAt: new Date().toISOString(),
+            status: 'failed',
+            error: 'Failed to create job',
+            stages: [],
+          });
+          continue;
+        }
+        
+        const domainConfig = getCheckoutConfigForDomain(domain, checkoutConfig);
+        const stages = await runCheckoutJourney(domain, jobId, domainConfig);
+        
+        const result: AuditResult = {
+          domain,
+          jobId,
+          startedAt: job.result.startedAt || startedAt,
+          completedAt: new Date().toISOString(),
+          status: 'completed',
+          stages: stages.map(stage => ({
+            ...stage,
+            screenshotUrl: stage.screenshotUrl.startsWith('http') 
+              ? stage.screenshotUrl 
+              : `${baseUrl}${stage.screenshotUrl}`
+          })),
+        };
+        
+        completeJob(jobId, result);
+        results.push(result);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        results.push({
+          domain,
+          jobId: '',
+          startedAt: new Date().toISOString(),
+          completedAt: new Date().toISOString(),
+          status: 'failed',
+          error: errorMessage,
+          stages: [],
+        });
+      }
+    }
+    
+    res.json({ results });
+  } catch (error) {
+    console.error('Error in batch sync audit:', error);
+    res.status(500).json({ error: 'Failed to process batch audit' });
   }
 });
 
@@ -240,7 +416,9 @@ async function runAuditAsync(jobId: string, domain: string): Promise<void> {
   job.progressPct = 5;
   
   try {
-    const stages = await runCheckoutJourney(domain, jobId, checkoutConfig);
+    // Get location-specific checkout config based on domain
+    const domainConfig = getCheckoutConfigForDomain(domain, checkoutConfig);
+    const stages = await runCheckoutJourney(domain, jobId, domainConfig);
     
     // Build final result
     const result: AuditResult = {
@@ -278,11 +456,14 @@ process.on('SIGTERM', async () => {
 
 /**
  * Start server
+ * Bind to 0.0.0.0 for Railway/production deployment
  */
-app.listen(PORT, () => {
-  console.log(`\n🚀 Checkout Auditor Server running on http://localhost:${PORT}`);
-  console.log(`📊 Frontend: http://localhost:${PORT}`);
-  console.log(`🔌 API Health: http://localhost:${PORT}/api/health`);
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`\n🚀 Checkout Auditor Server running on http://${HOST}:${PORT}`);
+  console.log(`📊 Frontend: http://${HOST}:${PORT}`);
+  console.log(`🔌 API Health: http://${HOST}:${PORT}/api/health`);
+  console.log(`🔗 Sync API: POST http://${HOST}:${PORT}/api/audit-sync`);
   
   // Run cleanup every 5 minutes
   setInterval(() => {

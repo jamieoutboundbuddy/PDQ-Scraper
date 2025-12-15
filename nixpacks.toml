@@ -1,0 +1,19 @@
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "python3"]
+
+[phases.install]
+cmds = [
+  "npm ci",
+  "npx playwright install --with-deps chromium"
+]
+
+[phases.build]
+cmds = ["npx tsc"]
+
+[start]
+cmd = "npm start"
+
+[variables]
+MAX_CONCURRENT = "3"
+FAST_MODE = "true"
+

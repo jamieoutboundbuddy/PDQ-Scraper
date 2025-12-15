@@ -6,9 +6,11 @@ import { Page } from 'playwright';
 import { Detection, Detections } from './types';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  : null;
 
 /**
  * Main detection orchestrator - runs all detection rules
@@ -95,7 +97,15 @@ async function detectUpsells(page: Page, domText: string): Promise<Detection> {
     };
   }
   
-  // Ambiguous case: check page structure with LLM
+  // Ambiguous case: check page structure with LLM (if available)
+  if (!openai) {
+    return {
+      present: false,
+      confidence: 0.3,
+      evidence: [],
+    };
+  }
+
   try {
     const promptText = `
 You are analyzing an ecommerce page for upsell/cross-sell sections.

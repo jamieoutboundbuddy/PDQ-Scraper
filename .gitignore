@@ -143,3 +143,7 @@ config.yml
 dist/
 uploads/
 
+# Node.js
+node_modules/
+package-lock.json
+
